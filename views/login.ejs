@@ -1,0 +1,18 @@
+<%- include("partials/header") -%>
+
+<section class="flex h-[40%] w-[40%] justify-evenly bg-slate-200 p-3">
+    <div class="flex bg-slate-300 flex-col justify-between mr-3">
+        <form action="/login" class="flex flex-col" method="post">
+            <input type="email" placeholder="email" class="p-2 rounded-full mb-2 outline-none focus:border-purple-300 focus:border-[3px]" name="email">
+            <input type="password" placeholder="password" class="p-2 rounded-full mb-2 outline-none focus:border-purple-300 focus:border-[3px]" name="password" id="">
+            <button type="submit" class="p-2 bg-purple-300 rounded-lg">log in</button>
+        </form>
+        <p class="text-sm">do you already have an account?<a href="/sigin">sign in</a></p>
+    </div>
+    <div class="flex flex-col bg-slate-500">
+        <a class="p-2 bg-red-400 rounded-md lg:w-[15rem]" href="/auth/google"><i class="fa-brands mr-1 fa-google"></i>Google</a>
+        <a href="/auth/facebook"><i class="fa-brands fa-facebook"></i>Facebook</a>
+    </div>
+</section>
+
+<%- include("partials/footer") -%>
