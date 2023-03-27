@@ -50,6 +50,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 passport.use(User.createStrategy());
+app.use(passport.session());
 
 passport.serializeUser(function (user, cb) {
   process.nextTick(function () {
@@ -145,7 +146,7 @@ app.get(
     passport.authenticate('facebook', { failureRedirect: '/login' }),
     function (req, res) {
       // Successful authentication, redirect home.
-      res.redirect('/');
+      res.redirect('/home');
     }
   );
   
@@ -159,7 +160,7 @@ app.get(
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
       // Successful authentication, redirect home.
-      res.redirect('/');
+      res.redirect('/home');
     }
   );
 
@@ -172,10 +173,10 @@ app.get(
   })
 
 app.get("/home",(req,res)=>{
+  console.log(req.user);
     User.findById(req.user.id)
-    console.log(req.user)
     .then(() => {
-        res.render("home",{user:user.req.user.username});
+        res.render("home",{user:req.user.username});
     })
     .catch((err) => {
       console.log(err);
@@ -217,6 +218,6 @@ app.post("/signin",(req,res)=>{
 });
 
 app.listen(port, () => {
-    console.log(`listening on port${port}...`);
+    console.log(`listening on port: ${port}...`);
   });
   
