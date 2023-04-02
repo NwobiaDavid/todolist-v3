@@ -11,7 +11,7 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 
 app.use(
@@ -28,19 +28,29 @@ app.use(
 mongoose.connect( "mongodb://127.0.0.1:27017/userDB",{useNewUrlParser: true});
 
 // const todoSchema = new mongoose.Schema({
-//     task: [String],
+    
 // })
 
+const noteSchema = new mongoose.Schema({
+    title: String,
+    content: String,
+});
+
+const Note = mongoose.model("Note",noteSchema);
 
 const userSchema= new mongoose.Schema({
     name: String,
     password: String,
     googleId: String,
     facebookId: String,
-    todo: [String]
-})
+    todo: [noteSchema]
+});
+
+
 
 userSchema.plugin(passportLocalMongoose);
+
+
 
 const User = mongoose.model("User", userSchema);
 
@@ -122,6 +132,7 @@ passport.use(
             const newUser = new User({
               username: profile.displayName,
               facebookId: profile.id,
+              todo:[]
             });
             user = await newUser.save();
           }
@@ -176,11 +187,42 @@ app.get("/home",(req,res)=>{
   console.log(req.user);
     User.findById(req.user.id)
     .then(() => {
-        res.render("home",{user:req.user.username});
+
+      // Note.createCollection()
+      // .then(function(collection) {
+      //   res.render("home",{user:req.user.username, notes:collection});
+      //   console.log('Collection is created!');
+      // });
+
+
+      // Note.find({}).toArray((err, result) => {
+      //   if (err) {
+      //     console.error(err);
+      //     return;
+      //   }
+    
+      //   console.log(result);
+      //   res.render("home",{user:req.user.username, notes:result});
+      //   client.close();
+      // });
+
+      Note.find({}).lean().exec()
+      .then(result=>{
+        res.render("home",{user:req.user.username, notes:result});
+      })
+      .catch(err=>{console.log(err);});
+
     })
+
+    
+
     .catch((err) => {
       console.log(err);
     });
+    // User.findById(req.user.id)
+    // .then(foundUser=>{
+    //   res.render("home",{user:req.user.username});
+    // })
 })
 
 
@@ -216,6 +258,49 @@ app.post("/signin",(req,res)=>{
         }
       );
 });
+
+app.get("/compose",(req,res)=>{
+  res.render("compose");
+});
+
+
+
+app.post("/compose",(req,res)=>{
+  
+
+  const newNote = new Note({
+    title : req.body.title,
+    content : req.body.textarea
+  });
+  newNote.save();
+
+  User.updateOne({_id:req.user.id},{todo:Note})
+    .then(()=>{
+    
+      console.log("added");
+      
+      res.redirect('/home');
+    })
+    .catch(err=>{console.log(err);});
+
+  
+
+  // User.findById(req.user.id)
+  // .then(foundUser =>{
+    
+  //   User.updateOne({_id:req.user.id},{todo:noteArray})
+  //   .then(()=>{
+  //     console.log("updated the last statement");
+  //     noteArray.push(newNote);
+  //     console.log(noteArray);
+
+  //   })
+  //   .catch(err=>{console.log(err);});
+  //   res.redirect("/");
+  // })
+  // .catch(err=>{console.log(err);});
+})
+
 
 app.listen(port, () => {
     console.log(`listening on port: ${port}...`);
