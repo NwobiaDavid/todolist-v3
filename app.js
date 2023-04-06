@@ -31,26 +31,20 @@ mongoose.connect( "mongodb://127.0.0.1:27017/userDB",{useNewUrlParser: true});
     
 // })
 
-const noteSchema = new mongoose.Schema({
-    title: String,
-    content: String,
-});
 
-const Note = mongoose.model("Note",noteSchema);
+
 
 const userSchema= new mongoose.Schema({
     name: String,
     password: String,
     googleId: String,
     facebookId: String,
-    todo: [noteSchema]
+    todo: [String]
 });
 
 
 
 userSchema.plugin(passportLocalMongoose);
-
-
 
 const User = mongoose.model("User", userSchema);
 
@@ -132,7 +126,6 @@ passport.use(
             const newUser = new User({
               username: profile.displayName,
               facebookId: profile.id,
-              todo:[]
             });
             user = await newUser.save();
           }
@@ -186,43 +179,14 @@ app.get(
 app.get("/home",(req,res)=>{
   console.log(req.user);
     User.findById(req.user.id)
-    .then(() => {
-
-      // Note.createCollection()
-      // .then(function(collection) {
-      //   res.render("home",{user:req.user.username, notes:collection});
-      //   console.log('Collection is created!');
-      // });
-
-
-      // Note.find({}).toArray((err, result) => {
-      //   if (err) {
-      //     console.error(err);
-      //     return;
-      //   }
-    
-      //   console.log(result);
-      //   res.render("home",{user:req.user.username, notes:result});
-      //   client.close();
-      // });
-
-      Note.find({}).lean().exec()
-      .then(result=>{
-        res.render("home",{user:req.user.username, notes:result});
-      })
-      .catch(err=>{console.log(err);});
-
+    .then((foundUser) => {
+      
+      res.render("home",{user:req.user.username,notes:foundUser.todo})
+     console.log(foundUser);
     })
-
-    
-
     .catch((err) => {
       console.log(err);
     });
-    // User.findById(req.user.id)
-    // .then(foundUser=>{
-    //   res.render("home",{user:req.user.username});
-    // })
 })
 
 
@@ -240,6 +204,15 @@ app.post("/login",(req,res)=>{
           });
         }
       }); 
+});
+
+app.get('/logout', (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/');
+  });
 });
 
 app.post("/signin",(req,res)=>{
@@ -268,20 +241,34 @@ app.get("/compose",(req,res)=>{
 app.post("/compose",(req,res)=>{
   
 
-  const newNote = new Note({
+  const newNote = {
     title : req.body.title,
     content : req.body.textarea
-  });
-  newNote.save();
+  };
 
-  User.updateOne({_id:req.user.id},{todo:Note})
-    .then(()=>{
+  let obj = JSON.stringify(newNote);
+  console.log(newNote);
+
+  // User.updateOne({_id:req.user.id},{todo:Note})
+  //   .then(()=>{
     
-      console.log("added");
+  //     console.log("added");
       
-      res.redirect('/home');
+  //     res.redirect('/home');
+  //   })
+  //   .catch(err=>{console.log(err);});
+
+    User.findById(req.user.id)
+    .then(foundUser=>{
+      foundUser.todo.push(obj);
+      console.log("successfully added "+ newNote);
+      foundUser.save()
+      .then(()=>{
+        res.redirect("/home");
+      })
+      .catch(err=>{console.log(err);})
     })
-    .catch(err=>{console.log(err);});
+    .catch(err=>{console.log(err);})
 
   
 
@@ -300,6 +287,9 @@ app.post("/compose",(req,res)=>{
   // })
   // .catch(err=>{console.log(err);});
 })
+
+
+
 
 
 app.listen(port, () => {
