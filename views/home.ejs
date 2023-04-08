@@ -4,9 +4,16 @@
     this is todo <%= user %>
     <a href="/compose">compose</a>
         
-       <!-- <p>this is a list of the notes=><%= notes %></p> -->
-      <p><%=notes%></p>
-     
+
+
+    <% notes.forEach(obj=>{ %>
+      <%  let arr = JSON.parse(obj); %>
+        <p><%= arr.title %></p> 
+        <p><%= arr.content %></p>
+       <% }); %>
+        
+      
+     <a href="/logout">log out</a>
 </section>
 
 <%- include("partials/footer") -%>

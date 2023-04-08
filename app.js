@@ -27,9 +27,6 @@ app.use(
 
 mongoose.connect( "mongodb://127.0.0.1:27017/userDB",{useNewUrlParser: true});
 
-// const todoSchema = new mongoose.Schema({
-    
-// })
 
 
 
@@ -180,9 +177,13 @@ app.get("/home",(req,res)=>{
   console.log(req.user);
     User.findById(req.user.id)
     .then((foundUser) => {
-      
       res.render("home",{user:req.user.username,notes:foundUser.todo})
-     console.log(foundUser);
+    
+     foundUser.todo.forEach(obj=>{
+      let arr = JSON.parse(obj);
+      console.log(arr.title);
+     });
+
     })
     .catch((err) => {
       console.log(err);
@@ -206,14 +207,6 @@ app.post("/login",(req,res)=>{
       }); 
 });
 
-app.get('/logout', (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/');
-  });
-});
 
 app.post("/signin",(req,res)=>{
     User.register(
@@ -249,14 +242,6 @@ app.post("/compose",(req,res)=>{
   let obj = JSON.stringify(newNote);
   console.log(newNote);
 
-  // User.updateOne({_id:req.user.id},{todo:Note})
-  //   .then(()=>{
-    
-  //     console.log("added");
-      
-  //     res.redirect('/home');
-  //   })
-  //   .catch(err=>{console.log(err);});
 
     User.findById(req.user.id)
     .then(foundUser=>{
@@ -270,25 +255,16 @@ app.post("/compose",(req,res)=>{
     })
     .catch(err=>{console.log(err);})
 
-  
-
-  // User.findById(req.user.id)
-  // .then(foundUser =>{
-    
-  //   User.updateOne({_id:req.user.id},{todo:noteArray})
-  //   .then(()=>{
-  //     console.log("updated the last statement");
-  //     noteArray.push(newNote);
-  //     console.log(noteArray);
-
-  //   })
-  //   .catch(err=>{console.log(err);});
-  //   res.redirect("/");
-  // })
-  // .catch(err=>{console.log(err);});
 })
 
-
+app.get('/logout', (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/login');
+  });
+});
 
 
 
