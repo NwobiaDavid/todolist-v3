@@ -6,11 +6,14 @@
         
 
 
-    <% notes.forEach(obj=>{ %>
-      <%  let arr = JSON.parse(obj); %>
-        <p><%= arr.title %></p> 
-        <p><%= arr.content %></p>
-       <% }); %>
+    <div class="note">
+      <button class="delete">delete</button>
+      <% notes.forEach(obj=>{ %>
+        <%  let arr = JSON.parse(obj); %>
+          <p><%= arr.title %></p>
+          <p><%= arr.content %></p>
+         <% }); %>
+    </div>
         
       
      <a href="/logout">log out</a>

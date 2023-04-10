@@ -13,6 +13,10 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use('/public',express.static(__dirname +'/public'));
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.use(
     session({
@@ -27,10 +31,6 @@ app.use(
 
 mongoose.connect( "mongodb://127.0.0.1:27017/userDB",{useNewUrlParser: true});
 
-
-
-
-
 const userSchema= new mongoose.Schema({
     name: String,
     password: String,
@@ -39,19 +39,12 @@ const userSchema= new mongoose.Schema({
     todo: [String]
 });
 
-
-
 userSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model("User", userSchema);
 
-app.use('/public',express.static(__dirname +'/public'));
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
-
 
 passport.use(User.createStrategy());
-app.use(passport.session());
 
 passport.serializeUser(function (user, cb) {
   process.nextTick(function () {
@@ -169,21 +162,16 @@ app.get(
     res.render("login");
   });
 
-  app.get("/signin",(req,res)=>{
-    res.render("sigin");
+  app.get("/signup",(req,res)=>{
+    res.render("signup");
   })
 
-app.get("/home",(req,res)=>{
-  console.log(req.user);
+app.get("/home" ,(req,res)=>{
+  // console.log(req.user);
     User.findById(req.user.id)
     .then((foundUser) => {
-      res.render("home",{user:req.user.username,notes:foundUser.todo})
-    
-     foundUser.todo.forEach(obj=>{
-      let arr = JSON.parse(obj);
-      console.log(arr.title);
-     });
-
+      console.log("found user ="+foundUser);
+      res.render("home",{user:req.user.username,notes:foundUser.todo});
     })
     .catch((err) => {
       console.log(err);
@@ -191,42 +179,12 @@ app.get("/home",(req,res)=>{
 })
 
 
-app.post("/login",(req,res)=>{
-    const user = new User({
-        email: req.body.email,
-        password: req.body.password
-    });
-    req.login(user, function (err) {
-        if (err) {
-          console.log(err);
-        } else {
-          passport.authenticate('local')(req, res, function () {
-            res.redirect('/home');
-          });
-        }
-      }); 
-});
-
-
-app.post("/signin",(req,res)=>{
-    User.register(
-        { username: req.body.email },
-        req.body.password,
-        function (err, user) {
-          if (err) {
-            console.log(err);
-            res.redirect('/signin');
-          } else {
-            passport.authenticate('local')(req, res, function () {
-              res.redirect('/');
-            });
-          }
-        }
-      );
-});
-
 app.get("/compose",(req,res)=>{
-  res.render("compose");
+  if(req.isAuthenticated()){
+     res.render("compose");
+  }else{
+    res.redirect("/login");
+  }
 });
 
 
@@ -240,7 +198,7 @@ app.post("/compose",(req,res)=>{
   };
 
   let obj = JSON.stringify(newNote);
-  console.log(newNote);
+  // console.log(newNote);
 
 
     User.findById(req.user.id)
@@ -267,8 +225,50 @@ app.get('/logout', (req, res) => {
 });
 
 
+app.post("/signup",(req,res)=>{
+  User.register( 
+      { username: req.body.username },
+      req.body.password,
+      function (err, user) {
+        if (err) {
+          console.log(err);
+          res.redirect('/signup');
+        } else {
+          passport.authenticate('local')(req, res, function () {
+            res.redirect('/home');
+          });
+        }
+      }
+    );
+});
+
+
+
+// function isLoggedIn(req, res, next){
+//   if(req.isAuthenticated()){
+//       return next();
+//   }
+//   res.redirect("/login");
+// }
+
+app.post("/login",(req,res)=>{
+  const user = new User({
+      email: req.body.username,
+      password: req.body.password,
+  })
+
+  req.login(user, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        passport.authenticate('local')(req, res, function () {
+          res.redirect('/home');
+        });
+      }
+    }); 
+  });
+
 
 app.listen(port, () => {
     console.log(`listening on port: ${port}...`);
   });
-  
