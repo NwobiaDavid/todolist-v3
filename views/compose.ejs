@@ -1,5 +1,10 @@
-<form action="/compose" method="post">
-    <input type="text" name="title" id="">
-    <textarea name="textarea" required id="" cols="30" rows="10"></textarea>
-    <button type="submit">enter</button>
+<%- include("partials/header") -%>
+<form action="/compose" class="flex text-2xl p-8 flex-col w-screen h-screen" method="post">
+    <div class="flex justify-end"><button type="submit" class="bg-red-500 w-20  p-3 ">enter</button></div>
+
+    <input type="text" maxlength="100" class="border-2 h-20 mb-10 outline-none border-red-500" required name="title" id="">
+    <textarea name="textarea" class="resize-none border-2 h-[50%] outline-none border-blue-500" required id="" cols="30" rows="10"></textarea>
+    
 </form>
+
+<%- include("partials/footer") -%>

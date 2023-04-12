@@ -170,7 +170,7 @@ app.get("/home" ,(req,res)=>{
   // console.log(req.user);
     User.findById(req.user.id)
     .then((foundUser) => {
-      console.log("found user ="+foundUser);
+      // console.log("found user ="+foundUser);
       res.render("home",{user:req.user.username,notes:foundUser.todo});
     })
     .catch((err) => {
@@ -191,14 +191,22 @@ app.get("/compose",(req,res)=>{
 
 app.post("/compose",(req,res)=>{
   
+  // console.log(req.body.textarea);
 
-  const newNote = {
+  // console.log(req.body.title);
+
+  if(req.body.title === " " || req.body.textarea === " "){
+    res.redirect('/home');
+  }else{
+
+    const newNote = {
     title : req.body.title,
     content : req.body.textarea
   };
 
   let obj = JSON.stringify(newNote);
   // console.log(newNote);
+
 
 
     User.findById(req.user.id)
@@ -212,6 +220,9 @@ app.post("/compose",(req,res)=>{
       .catch(err=>{console.log(err);})
     })
     .catch(err=>{console.log(err);})
+  }
+
+
 
 })
 
