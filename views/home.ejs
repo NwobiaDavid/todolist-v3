@@ -43,16 +43,16 @@
           <div class=" w-[400px] group rounded-lg p-3 duration-200 hover:bg-slate-400 bg-slate-200">
             <p class="font-semibold py-2 border-b-2 border-gray-500 group-hover:border-gray-900"><%= arr.title %></p>
 
-            <%let content =  arr.content; %>
+            <!-- <%let content =  arr.content; %> -->
 
-            <%function truncateString(content) { %>
+            <!-- <%function truncateString(content) { %>
               <%if (content.length > 100) { %>
                 <% return content.substring(0, 100) + "..." %>
                 <%} else { return content;  } %>
                   <%}%>
 
-                  <%let y = truncateString(content);%>
-            <p><%= y %>   <a class="text-sm text-blue-500 group-hover:text-white" href="">read more</a> </p>
+                  <%let y = truncateString(content);%> -->
+            <p class="text-base"><%= arr.content %> </p>
            
           </div>
          <% }); %>

@@ -29,7 +29,7 @@ app.use(
   app.use(passport.initialize());
   app.use(passport.session());
 
-mongoose.connect( "mongodb://127.0.0.1:27017/userDB",{useNewUrlParser: true});
+mongoose.connect( "mongodb://0.0.0.0:27017/userDB",{useNewUrlParser: true});
 
 const userSchema= new mongoose.Schema({
     name: String,
@@ -170,8 +170,9 @@ app.get("/home" ,(req,res)=>{
   // console.log(req.user);
     User.findById(req.user.id)
     .then((foundUser) => {
-      // console.log("found user ="+foundUser);
-      res.render("home",{user:req.user.username,notes:foundUser.todo});
+      // console.log("found user ="+foundUser.todo);
+         res.render("home",{user:req.user.username,notes:foundUser.todo});
+
     })
     .catch((err) => {
       console.log(err);
@@ -207,8 +208,6 @@ app.post("/compose",(req,res)=>{
   let obj = JSON.stringify(newNote);
   // console.log(newNote);
 
-
-
     User.findById(req.user.id)
     .then(foundUser=>{
       foundUser.todo.push(obj);
@@ -221,10 +220,9 @@ app.post("/compose",(req,res)=>{
     })
     .catch(err=>{console.log(err);})
   }
+});
 
 
-
-})
 
 app.get('/logout', (req, res) => {
   req.logout(function (err) {

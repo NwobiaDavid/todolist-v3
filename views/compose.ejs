@@ -1,10 +1,42 @@
 <%- include("partials/header") -%>
-<form action="/compose" class="flex text-2xl p-8 flex-col w-screen h-screen" method="post">
-    <div class="flex justify-end"><button type="submit" class="bg-red-500 w-20  p-3 ">enter</button></div>
+<form
+  action="/compose"
+  class="flex text-2xl p-8 flex-col w-screen h-screen"
+  method="post"
+>
+  <div class="flex justify-end">
+    <a href="/home" class="bg-red-500 rounded-xl hover:bg-red-600 p-3">Discard</a>
+  </div>
 
-    <input type="text" maxlength="100" class="border-2 h-20 mb-10 outline-none border-red-500" required name="title" id="">
-    <textarea name="textarea" class="resize-none border-2 h-[50%] outline-none border-blue-500" required id="" cols="30" rows="10"></textarea>
-    
+  <div class="flex flex-col justify-center items-center">
+    <input
+      type="text"
+      maxlength="60"
+      class="border-2 h-20 w-[40%] p-3 rounded-t-xl mb-10 outline-none border-transparent bg-slate-200 duration-200 hover:bg-white focus:bg-white focus:border-gray-600 hover:border-gray-500"
+      required
+      name="title"
+      id=""
+    />
+    <textarea
+      name="textarea"
+      maxlength="300"
+      class="resize-none w-[40%] border-2 p-3 h-[50%] rounded-b-md outline-none border-transparent bg-slate-200 duration-200 hover:bg-white focus:bg-white focus:border-gray-600 hover:border-gray-500"
+      required
+      id=""
+      cols="30"
+      rows="10"
+    ></textarea>
+  </div>
+
+  <div class="flex justify-center">
+    <button
+      type="submit"
+      class="bg-blue-500 p-3 rounded-t-md animate-pulse hover:animate-none hover:bg-blue-600 rounded-b-2xl px-5"
+    >
+      enter
+    </button>
+  </div>
 </form>
+
 
 <%- include("partials/footer") -%>
