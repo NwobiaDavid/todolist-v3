@@ -29,7 +29,7 @@ app.use(
   app.use(passport.initialize());
   app.use(passport.session());
 
-mongoose.connect( "mongodb://0.0.0.0:27017/userDB",{useNewUrlParser: true});
+mongoose.connect( process.env.MONGO_URL,{useNewUrlParser: true});
 
 const userSchema= new mongoose.Schema({
     name: String,
